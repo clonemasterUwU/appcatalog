@@ -1,0 +1,27 @@
+version: '3'
+services:
+
+  mongodb:
+    container_name: database
+    image: mongo:5
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/data/db
+    ports:
+        - 27017:27017
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
+
+  app:
+    restart: always
+    build: ./AppCatalogDemo
+    working_dir: /AppCatalogDemo
+    volumes:
+      - ./AppCatalogDemo:/AppCatalogDemo
+      - ~/.m2:/root/.m2
+    ports:
+      - 8080:8080
+    command: mvn clean spring-boot:run
+    depends_on:
+      - mongodb
